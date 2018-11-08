@@ -29,7 +29,6 @@
             seconds = seconds < 10 ? '0' + seconds : seconds;
 
             return day + "." + month  + "." + year + " - " + hours + ":" + minutes + ":" + seconds;
-
         }
 
         function lpad(value, padding) {
@@ -39,10 +38,12 @@
 
         var now = new Date();
         var nowText = formatDate(now);
+        var options = {counterparty:'rDp2Cqqs6qEBad8PuS6csZs88XSqrTCbZf', earliestFirst:false, initiated:false, limit:1, types:["payment"]};
 
         print("<h1>Unsigned:</h1>");
         
-        var PassPhrase = "The Moon is a Harsh Mistress.";
+        //var PassPhrase = "The Moon is a Harsh Mistress.";
+        var PassPhrase = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjJiMjcyNjBmOTNiZGQyNWY3YTY1NTEzMWZlOTZjMjBhIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NDE2Nzg2MTUsImV4cCI6MTU0MTY";
         var Bits = 512;
         
         print("Matt's passphrase.........: (" + lpad(PassPhrase.length, 4) + ") [" + PassPhrase + "]");
@@ -54,8 +55,10 @@
         print("Matt's public key string..: (" + lpad(MattsPublicKeyString.length, 4) + ") [" + MattsPublicKeyString + "]");
         //print(MattsPublicKeyString);
         
-        var PlainText = "Matt, I need you to help me with my Starcraft strategy (" + nowText + ")";
-        
+        //var PlainText = "Matt, I need you to help me with my Starcraft strategy (" + nowText + ") AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDDDDDDEEEEEEEEEEFFFFFFFFFFAAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDDDDDDEEEEEEEEEEFFFFFFFFFFAAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDDDDDDEEEEEEEEEEFFFFFFFFFFAAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDDDDDDDDDEEEEEEEEEEFFFFFFFFFF";
+        var PlainText = JSON.stringify(options);
+        //var PlainText = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjJiMjcyNjBmOTNiZGQyNWY3YTY1NTEzMWZlOTZjMjBhIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NDE2Nzg2MTUsImV4cCI6MTU0MTY";
+
         print("Sam's message.............: (" + lpad(PlainText.length, 4) + ") [" + PlainText + "]");
         
         var EncryptionResult = cryptico.encrypt(PlainText, MattsPublicKeyString);
@@ -69,61 +72,71 @@
         //print(DecryptionResult.plaintext);        
         print("DecryptionResult.signature: (" + lpad(DecryptionResult.signature.length, 4) + ") [" + DecryptionResult.signature + "]");
 
+
+
+
+
+
+
+
+
+
         print("<h1>Signed, good signature:</h1>");
 
-        var PassPhrase = "There Ain't No Such Thing As A Free Lunch."; 
-        var Bits = 512; 
+        //var PassPhrase = "There Ain't No Such Thing As A Free Lunch."; 
+        //var Bits = 512; 
         var SamsRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
-        var PlainText = "Matt, I need you to help me with my Starcraft strategy.";
+        //var PlainText = "Matt, I need you to help me with my Starcraft strategy.";
         var EncryptionResult = cryptico.encrypt(PlainText, MattsPublicKeyString, SamsRSAkey);
 
-        print("Sam's public key ID: " + cryptico.publicKeyID(cryptico.publicKeyString(SamsRSAkey)));
+        var samsPublicKeyId = cryptico.publicKeyID(cryptico.publicKeyString(SamsRSAkey));
+        print("Sam's public key ID.......: (" + lpad(samsPublicKeyId.length, 4) + ") [" + samsPublicKeyId + "]");
 
-        print("The encrypted message:");
-        print(EncryptionResult.cipher);        
+        print("The encrypted message.....: (" + lpad(EncryptionResult.cipher.length, 4) + ") [" + EncryptionResult.cipher + "]");
+        //print(EncryptionResult.cipher);        
         
         var DecryptionResult = cryptico.decrypt(EncryptionResult.cipher, MattsRSAkey);
 
-        print("The decrypted message:");
-        print(DecryptionResult.plaintext);        
+        print("The decrypted message.....: (" + lpad(DecryptionResult.plaintext.length, 4) + ") [" + DecryptionResult.plaintext + "]");
+        //print(DecryptionResult.plaintext);        
 
         print("DecryptionResult.signature: " + DecryptionResult.signature);
 
-        print("The signature public key string:");
-        print(DecryptionResult.publicKeyString);        
+        print("The signature public key string: (" + lpad(DecryptionResult.publicKeyString.length, 4) + ") [" + DecryptionResult.publicKeyString + "]");
+        //print(DecryptionResult.publicKeyString);        
 
-        print("The signature public key ID:");
-        print(cryptico.publicKeyID(DecryptionResult.publicKeyString));        
+        var samsPublicKeyIdDecrypted = cryptico.publicKeyID(DecryptionResult.publicKeyString)
+        print("The signature public key ID....: (" + lpad(samsPublicKeyIdDecrypted.length, 4) + ") [" + samsPublicKeyIdDecrypted + "]");
 
 
 
-        print("<h1>Signed, forged signature:</h1>");
+//         print("<h1>Signed, forged signature:</h1>");
 
-        EncryptionResult.cipher = "FrD9P9pbSuCpaMExcHI/6WHbrOgLlIWWegHrWRLN027+DekkaVzumh8QbCS7\n\
-6BZJpfQ0H0b/pEvPCnE9RNqFFQ==?h7W8J7KrqDd7TCDlOolSUPwRNxoJYoQ\n\
-o7h62SDsfLTfKcdzi6DUTfEq7DgsIKIZd8nYYrDmn3F1utFlgVja2mXSD7FY\n\
-RRNvYbmpmu3WBozG77hyFup3IlEQeOkKLBk9G1uEYGcrXiIktJiYBvn8ltVP\n\
-Qdo6cViIkwYjEdNoCIanYsSO+YB20EyuKfDj0p62QW9sAVx8jeQmY+f7cvWj\n\
-/3evPfZ2D3gaXXT+QY2mu+0ap8P89rPFmrlMgMVFRye4FEWHSkSiKtrddt1y\n\
-DZoMxwxFytKA2QciN7MHgZRZ16kcO1KjpPlb9jSXDbzllCWDhigN+kvBog4L\n\
-GvhTe0CEn5HKGpWx1+TGbC7pim6/KOFo34DScLOrclUNGl0VY8W+/+EBXhin\n\
-dthvRRcjy+0BRn4tDpC4QJjdJoXCqDmT3NRU="
+//         EncryptionResult.cipher = "FrD9P9pbSuCpaMExcHI/6WHbrOgLlIWWegHrWRLN027+DekkaVzumh8QbCS7\n\
+// 6BZJpfQ0H0b/pEvPCnE9RNqFFQ==?h7W8J7KrqDd7TCDlOolSUPwRNxoJYoQ\n\
+// o7h62SDsfLTfKcdzi6DUTfEq7DgsIKIZd8nYYrDmn3F1utFlgVja2mXSD7FY\n\
+// RRNvYbmpmu3WBozG77hyFup3IlEQeOkKLBk9G1uEYGcrXiIktJiYBvn8ltVP\n\
+// Qdo6cViIkwYjEdNoCIanYsSO+YB20EyuKfDj0p62QW9sAVx8jeQmY+f7cvWj\n\
+// /3evPfZ2D3gaXXT+QY2mu+0ap8P89rPFmrlMgMVFRye4FEWHSkSiKtrddt1y\n\
+// DZoMxwxFytKA2QciN7MHgZRZ16kcO1KjpPlb9jSXDbzllCWDhigN+kvBog4L\n\
+// GvhTe0CEn5HKGpWx1+TGbC7pim6/KOFo34DScLOrclUNGl0VY8W+/+EBXhin\n\
+// dthvRRcjy+0BRn4tDpC4QJjdJoXCqDmT3NRU="
 
-        print("The encrypted message:");
-        print(EncryptionResult.cipher);        
+//         print("The encrypted message:");
+//         print(EncryptionResult.cipher);        
         
-        var DecryptionResult = cryptico.decrypt(EncryptionResult.cipher, MattsRSAkey);
+//         var DecryptionResult = cryptico.decrypt(EncryptionResult.cipher, MattsRSAkey);
 
-        print("The decrypted message:");
-        print(DecryptionResult.plaintext);        
+//         print("The decrypted message:");
+//         print(DecryptionResult.plaintext);        
 
-        print("DecryptionResult.signature: " + DecryptionResult.signature);
+//         print("DecryptionResult.signature: " + DecryptionResult.signature);
 
-        print("The signature public key string:");
-        print(DecryptionResult.publicKeyString);        
+//         print("The signature public key string:");
+//         print(DecryptionResult.publicKeyString);        
 
-        print("The signature public key ID:");
-        print(cryptico.publicKeyID(DecryptionResult.publicKeyString));        
+//         print("The signature public key ID:");
+//         print(cryptico.publicKeyID(DecryptionResult.publicKeyString));        
         
 
             
